@@ -7,17 +7,19 @@ public class UnoComputer {
 		}
 		UnoCard wildCandidate = null;
 		for (int i = 0; i < h.getSize(); i++) {
-			UnoCard card = (UnoCard) h.getCard(i);
+			Card baseCard = h.getCard(i);
+			if (!(baseCard instanceof UnoCard)) continue;
+			UnoCard card = (UnoCard) baseCard;
 			if (card == null) {
 				continue;
 			}
-			if ("Wild".equals(card.suit)) {
+			if (card.suit != null && "Wild".equals(card.suit)) {
 				if (wildCandidate == null) {
 					wildCandidate = card;
 				}
 				continue;
 			}
-			if (card.suit.equals(current.suit) || card.value.equals(current.value)) {
+			if ((card.suit != null && card.suit.equals(current.suit)) || (card.value != null && card.value.equals(current.value))) {
 				return card;
 			}
 		}

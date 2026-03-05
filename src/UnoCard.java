@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+import processing.core.PConstants;
 
 public class UnoCard extends Card {
     public UnoCard(String value, String suit) {
@@ -52,12 +53,12 @@ public class UnoCard extends Card {
             sketch.noFill();
             sketch.strokeWeight(3);
             // first arrow
-            sketch.arc(x + 15, y + 15, 20, 20, sketch.PI * 1 / 6, sketch.PI);
+            sketch.arc(x + 15, y + 15, 20, 20, PConstants.PI * 1 / 6, PConstants.PI);
             // at the end of the arc, draw an arrowhead
             sketch.line(x + 5, y + 15, x + 8, y + 18);
             sketch.line(x + 5, y + 15, x + 3, y + 18);
             // second arrow
-            sketch.arc(x + 15, y + 15, 20, 20, sketch.PI * 7 / 6, sketch.TWO_PI);
+            sketch.arc(x + 15, y + 15, 20, 20, PConstants.PI * 7 / 6, PConstants.TWO_PI);
             sketch.line(x + 25, y + 15, x + 22, y + 18);
             sketch.line(x + 25, y + 15, x + 28, y + 18);
             // line created
@@ -67,27 +68,24 @@ public class UnoCard extends Card {
         } else if (value == "Wild") {
             // wild symbol can be represented as four quadrants of circle
             sketch.fill(255, 0, 0);
-            sketch.arc(x + 15, y + 15, 20, 20, 0, sketch.HALF_PI);
+            sketch.arc(x + 15, y + 15, 20, 20, 0, PConstants.HALF_PI);
             sketch.fill(0, 255, 0);
-            sketch.arc(x + 15, y + 15, 20, 20,
-                    sketch.HALF_PI, sketch.PI);
+                sketch.arc(x + 15, y + 15, 20, 20,
+                    PConstants.HALF_PI, PConstants.PI);
             sketch.fill(0, 0, 255);
-            sketch.arc(x + 15, y + 15, 20, 20,
-                    sketch.PI, 3 * sketch.HALF_PI);
+                sketch.arc(x + 15, y + 15, 20, 20,
+                    PConstants.PI, 3 * PConstants.HALF_PI);
 
             sketch.fill(255, 255, 0);
-            sketch.arc(x + 15, y + 15, 20, 20,
-                    3 * sketch.HALF_PI, sketch.TWO_PI);
+                sketch.arc(x + 15, y + 15, 20, 20,
+                    3 * PConstants.HALF_PI, PConstants.TWO_PI);
         } else if (value == "Draw Four") {
             sketch.text("+4", x + 10, y + 10);
         } else {
             sketch.text(value, x + 10, y + 10);
-<<<<<<< HEAD
             sketch.textSize(60);
             sketch.text(value, x + 40, y + 50);
             sketch.textSize(14);
-=======
->>>>>>> 290db6b7af4ede51181daeab2170fd9881a6d488
         }
 
     }
