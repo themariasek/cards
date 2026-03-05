@@ -172,6 +172,9 @@ public class Card extends ClickableRectangle {
             }
                 sketch.textSize(16); // Ensure card value text size is always consistent
                 sketch.text(value, x + 10, y + 10);
+
+            sketch.fill(0);
+            sketch.text(value, x + 10, y + 10);
         }
         sketch.strokeWeight(1);
     }

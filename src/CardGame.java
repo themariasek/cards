@@ -24,10 +24,6 @@ public class CardGame {
 
     // UI
     ClickableRectangle drawButton;
-        public CardGame(int numCards) {
-            initializeGame();
-            dealCards(numCards);
-        }
 <<<<<<< HEAD
     ClickableRectangle playAgainButton;
 =======
