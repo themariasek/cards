@@ -82,9 +82,12 @@ public class UnoCard extends Card {
             sketch.text("+4", x + 10, y + 10);
         } else {
             sketch.text(value, x + 10, y + 10);
+<<<<<<< HEAD
             sketch.textSize(60);
             sketch.text(value, x + 40, y + 50);
             sketch.textSize(14);
+=======
+>>>>>>> 290db6b7af4ede51181daeab2170fd9881a6d488
         }
 
     }

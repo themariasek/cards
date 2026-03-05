@@ -6,8 +6,13 @@ import processing.core.PApplet;
 public class CardGame {
     // Core game components
     ArrayList<Card> deck = new ArrayList<>();
+<<<<<<< HEAD
     protected Hand playerOneHand;
     protected Hand playerTwoHand;
+=======
+    Hand playerOneHand;
+    Hand playerTwoHand;
+>>>>>>> 290db6b7af4ede51181daeab2170fd9881a6d488
     ArrayList<Card> discardPile = new ArrayList<>();
     Card selectedCard;
     int selectedCardRaiseAmount = 15;
@@ -19,7 +24,14 @@ public class CardGame {
 
     // UI
     ClickableRectangle drawButton;
+        public CardGame(int numCards) {
+            initializeGame();
+            dealCards(numCards);
+        }
+<<<<<<< HEAD
     ClickableRectangle playAgainButton;
+=======
+>>>>>>> 290db6b7af4ede51181daeab2170fd9881a6d488
     int drawButtonX = 250;
     int drawButtonY = 400;
     int drawButtonWidth = 100;
@@ -30,11 +42,14 @@ public class CardGame {
         dealCards(6);
     }
 
+<<<<<<< HEAD
     public CardGame(int numCards) {
         initializeGame();
         dealCards(numCards);
     }
 
+=======
+>>>>>>> 290db6b7af4ede51181daeab2170fd9881a6d488
     protected void initializeGame() {
         // Initialize draw button
         drawButton = new ClickableRectangle();
@@ -43,6 +58,7 @@ public class CardGame {
         drawButton.width = drawButtonWidth;
         drawButton.height = drawButtonHeight;
 
+<<<<<<< HEAD
         // Initialize play again button
         playAgainButton = new ClickableRectangle();
         playAgainButton.x = 250;
@@ -50,6 +66,8 @@ public class CardGame {
         playAgainButton.width = 100;
         playAgainButton.height = 40;
 
+=======
+>>>>>>> 290db6b7af4ede51181daeab2170fd9881a6d488
         // Initialize decks and hands
         deck = new ArrayList<>();
         discardPile = new ArrayList<>();
@@ -128,9 +146,12 @@ public class CardGame {
         lastPlayedCard = card;
         // Switch turns
         switchTurns();
+<<<<<<< HEAD
         if (playerOneHand.getSize() == 0 || playerTwoHand.getSize() == 0) {
             endGame();
         }
+=======
+>>>>>>> 290db6b7af4ede51181daeab2170fd9881a6d488
         return true;
     }
 
@@ -205,6 +226,7 @@ public class CardGame {
         return null;
     }
 
+<<<<<<< HEAD
     public void endGame() {
         if (playerOneHand.getSize() == 0) {
             System.out.println("You win!");
@@ -216,5 +238,10 @@ public class CardGame {
 
     public void drawChoices(PApplet app) {
         
+=======
+    public void drawChoices(PApplet app) {
+        // this method is available for overriding
+        // if you want to draw additional things (like Uno's wild color choices)
+>>>>>>> 290db6b7af4ede51181daeab2170fd9881a6d488
     }
 }
