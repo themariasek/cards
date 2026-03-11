@@ -10,9 +10,6 @@ public class UnoComputer {
 			Card baseCard = h.getCard(i);
 			if (!(baseCard instanceof UnoCard)) continue;
 			UnoCard card = (UnoCard) baseCard;
-			if (card == null) {
-				continue;
-			}
 			if (card.suit != null && "Wild".equals(card.suit)) {
 				if (wildCandidate == null) {
 					wildCandidate = card;

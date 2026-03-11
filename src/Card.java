@@ -82,9 +82,27 @@ public class Card extends ClickableRectangle {
     public void draw(PApplet sketch) {
         if (turned) {
             sketch.stroke(0);
-            sketch.strokeWeight(1.25f);
-            sketch.fill(150);
-            sketch.rect(x, y, width, height);
+            sketch.strokeWeight(2);
+            sketch.fill(20, 20, 80);
+            sketch.rect(x, y, width, height, 8);
+            int tileSize = 10;
+            sketch.noStroke();
+            for (int row = 0; row * tileSize < height; row++) {
+                for (int col = 0; col * tileSize < width; col++) {
+                    if ((row + col) % 2 == 0) {
+                        sketch.fill(160, 10, 10);
+                    } else {
+                        sketch.fill(30, 30, 110);
+                    }
+                    sketch.rect(x + col * tileSize, y + row * tileSize,
+                                Math.min(tileSize, width - col * tileSize),
+                                Math.min(tileSize, height - row * tileSize));
+                }
+            }
+            sketch.noFill();
+            sketch.stroke(0);
+            sketch.strokeWeight(2);
+            sketch.rect(x, y, width, height, 8);
             sketch.strokeWeight(1);
             return;
         }

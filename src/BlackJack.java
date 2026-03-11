@@ -7,8 +7,13 @@
 		int dealerFrameDelay = 0;
 		public boolean dealerTurnActive = false;
 		public boolean dealerSecondCardRevealed = false;
+		private boolean pendingDealerTurn = false;
+		private int dealerThinkingTimer = 0;
 
-		public void updateGameDelays(PApplet app) {
+		public void updateGameDelays() {
+			if (pendingDealerTurn) {
+				return;
+			}
 			if (dealerTurnActive) {
 				dealerSecondCardRevealed = true;
 				handleDealerTurnStep();
@@ -41,6 +46,27 @@
 			return !gameActive && !dealerTurnActive && !blackjackWinDelayActive;
 		}
 
+		public void beginDealerThinking() {
+			dealerTurnActive = false;
+			pendingDealerTurn = true;
+			dealerThinkingTimer = 0;
+		}
+
+		public void updateDealerThinking() {
+			if (pendingDealerTurn) {
+				dealerThinkingTimer++;
+				if (dealerThinkingTimer >= 40) {
+					dealerTurnActive = true;
+					pendingDealerTurn = false;
+					dealerThinkingTimer = 0;
+				}
+			}
+		}
+
+		public boolean showDealerThinkingText() {
+			return pendingDealerTurn || dealerTurnActive;
+		}
+
 		public void drawBlackJackUI(PApplet app) {
 			int playerTotal = ((BlackJackHand) playerOneHand).getTotalPoints();
 			boolean playerHasAce = false;
@@ -51,30 +77,195 @@
 				}
 			}
 			boolean showBlackjackText = (playerTotal == 21 && playerHasAce && !gameActive && blackjackWinDelayActive);
-				   boolean showButtons = gameActive && !dealerTurnActive;
-				   try {
-					   Class<?> appClass = app.getClass();
-					   java.lang.reflect.Field pendingField = appClass.getDeclaredField("pendingDealerTurn");
-					   pendingField.setAccessible(true);
-					   boolean pendingDealerTurn = pendingField.getBoolean(app);
-					   showButtons = showButtons && !pendingDealerTurn;
-				   } catch (Exception e) {
-				   }
+				   boolean showButtons = gameActive && !dealerTurnActive && !pendingDealerTurn;
 				   if (showButtons) {
-					   hitButton.draw(app);
-					   standButton.draw(app);
-					   app.fill(0);
+					   app.strokeWeight(2);
+					   for (int i = 0; i < hitButton.height; i++) {
+						   float t = (float)i / hitButton.height;
+						   int r = (int)PApplet.lerp(110, 180, t);
+						   int g = (int)PApplet.lerp(10, 40, t);
+						   int b = (int)PApplet.lerp(10, 40, t);
+						   app.stroke(r, g, b);
+						   app.fill(r, g, b);
+						   app.rect(hitButton.x, hitButton.y + i, hitButton.width, 1);
+					   }
+					   app.noFill();
+					   app.stroke(0);
+					   app.rect(hitButton.x, hitButton.y, hitButton.width, hitButton.height);
+					   app.fill(255);
+					   app.textSize(24);
 					   app.textAlign(PApplet.CENTER, PApplet.CENTER);
-					   app.text("Hit", hitButton.x + hitButton.width / 2,
-							   hitButton.y + hitButton.height / 2);
-					   app.text("Stand", standButton.x + standButton.width / 2,
-							   standButton.y + standButton.height / 2);
+					   app.text("Hit", hitButton.x + hitButton.width / 2, hitButton.y + hitButton.height / 2);
+
+					   app.strokeWeight(2);
+					   for (int i = 0; i < standButton.height; i++) {
+						   float t = (float)i / standButton.height;
+						   int r = (int)PApplet.lerp(20, 60, t);
+						   int g = (int)PApplet.lerp(40, 120, t);
+						   int b = (int)PApplet.lerp(90, 220, t);
+						   app.stroke(r, g, b);
+						   app.fill(r, g, b);
+						   app.rect(standButton.x, standButton.y + i, standButton.width, 1);
+					   }
+					   app.noFill();
+					   app.stroke(0);
+					   app.rect(standButton.x, standButton.y, standButton.width, standButton.height);
+					   app.fill(255);
+					   app.textSize(24);
+					   app.textAlign(PApplet.CENTER, PApplet.CENTER);
+					   app.text("Stand", standButton.x + standButton.width / 2, standButton.y + standButton.height / 2);
 				   }
 			if (showBlackjackText) {
 				app.fill(0, 180, 0);
 				app.textSize(32);
 				app.text("BLACKJACK!", app.width / 2, 120);
 				app.textSize(20);
+			}
+		}
+
+		public void drawScoreUI(PApplet app, boolean showEndScreen) {
+			int playerCircleX = 95;
+			int playerCircleY = 400;
+			int computerCircleX = 95;
+			int computerCircleY = 220;
+			int circleDiameter = 50;
+
+			BlackJackHand playerHand = (BlackJackHand) playerOneHand;
+			int playerPoints = playerHand.getTotalPoints();
+			int playerSoftValue = 0;
+			int playerHardValue = 0;
+			int playerAceCount = 0;
+			for (Card card : playerHand.getCards()) {
+				if (card instanceof BlackJackCard && ((BlackJackCard) card).getValue().equals("A")) {
+					playerAceCount++;
+				}
+			}
+			for (Card card : playerHand.getCards()) {
+				if (card instanceof BlackJackCard) {
+					playerHardValue += ((BlackJackCard) card).getPointValue();
+				}
+			}
+			playerSoftValue = playerHardValue;
+			if (playerAceCount > 0 && playerHardValue + 10 <= 21) {
+				playerSoftValue = playerHardValue + 10;
+			}
+
+			int playerRadius = circleDiameter / 2;
+			for (int i = 0; i < circleDiameter; i++) {
+				float t = (float)i / circleDiameter;
+				int r = (int)PApplet.lerp(110, 180, t);
+				int g = (int)PApplet.lerp(10, 40, t);
+				int b = (int)PApplet.lerp(10, 40, t);
+				float dy = i - playerRadius;
+				float halfW = (float)Math.sqrt(playerRadius * playerRadius - dy * dy);
+				app.stroke(r, g, b);
+				app.strokeWeight(1);
+				app.line(playerCircleX - halfW, playerCircleY - playerRadius + i,
+				         playerCircleX + halfW, playerCircleY - playerRadius + i);
+			}
+			app.stroke(0);
+			app.strokeWeight(2);
+			app.noFill();
+			app.ellipse(playerCircleX, playerCircleY, circleDiameter, circleDiameter);
+			app.fill(255);
+			app.textAlign(PApplet.CENTER, PApplet.CENTER);
+			if (playerAceCount > 0 && playerSoftValue != playerHardValue) {
+				app.textSize(16);
+				app.text(playerHardValue + "/" + playerSoftValue, playerCircleX, playerCircleY);
+			} else {
+				app.textSize(20);
+				app.text(playerPoints, playerCircleX, playerCircleY);
+			}
+			if (playerPoints > 21 && !gameActive && !showEndScreen) {
+				app.fill(220, 0, 0);
+				app.textSize(24);
+				app.text("BUST!", playerCircleX + circleDiameter / 2 + 40, playerCircleY);
+				app.textSize(20);
+			}
+
+			BlackJackHand dealerHand = (BlackJackHand) playerTwoHand;
+			int visiblePoints = 0;
+			int dealerSoftValue = 0;
+			int dealerHardValue = 0;
+			int dealerAceCount = 0;
+			for (int i = 0; i < dealerHand.getSize(); i++) {
+				Card card = dealerHand.getCard(i);
+				if (card != null && !card.turned) {
+					visiblePoints += card.getPointValue();
+					if (card instanceof BlackJackCard && ((BlackJackCard) card).getValue().equals("A")) {
+						dealerAceCount++;
+					}
+				}
+			}
+			for (int i = 0; i < dealerHand.getSize(); i++) {
+				Card card = dealerHand.getCard(i);
+				if (card != null && !card.turned && card instanceof BlackJackCard) {
+					dealerHardValue += ((BlackJackCard) card).getPointValue();
+				}
+			}
+			dealerSoftValue = dealerHardValue;
+			if (dealerAceCount > 0 && dealerHardValue + 10 <= 21) {
+				dealerSoftValue = dealerHardValue + 10;
+			}
+
+			int dealerRadius = circleDiameter / 2;
+			for (int i = 0; i < circleDiameter; i++) {
+				float t = (float)i / circleDiameter;
+				int r = (int)PApplet.lerp(20, 60, t);
+				int g = (int)PApplet.lerp(40, 120, t);
+				int b = (int)PApplet.lerp(90, 220, t);
+				float dy = i - dealerRadius;
+				float halfW = (float)Math.sqrt(dealerRadius * dealerRadius - dy * dy);
+				app.stroke(r, g, b);
+				app.strokeWeight(1);
+				app.line(computerCircleX - halfW, computerCircleY - dealerRadius + i,
+				         computerCircleX + halfW, computerCircleY - dealerRadius + i);
+			}
+			app.stroke(0);
+			app.strokeWeight(2);
+			app.noFill();
+			app.ellipse(computerCircleX, computerCircleY, circleDiameter, circleDiameter);
+			app.fill(255);
+			app.textAlign(PApplet.CENTER, PApplet.CENTER);
+			if (dealerAceCount > 0 && dealerSoftValue != dealerHardValue) {
+				app.textSize(16);
+				app.text(dealerHardValue + "/" + dealerSoftValue, computerCircleX, computerCircleY);
+			} else {
+				app.textSize(20);
+				app.text(visiblePoints, computerCircleX, computerCircleY);
+			}
+			if (visiblePoints > 21 && !gameActive && !showEndScreen && !dealerTurnActive) {
+				app.fill(220, 0, 0);
+				app.textSize(24);
+				app.text("BUST!", computerCircleX + circleDiameter / 2 + 40, computerCircleY);
+				app.textSize(20);
+			}
+		}
+
+		public int getBalanceDelta(int bet) {
+			int playerTotal = ((BlackJackHand) playerOneHand).getTotalPoints();
+			int computerTotal = ((BlackJackHand) playerTwoHand).getTotalPoints();
+			boolean playerHasAce = false;
+			for (Card card : playerOneHand.getCards()) {
+				if (card instanceof BlackJackCard && ((BlackJackCard) card).getValue().equals("A")) {
+					playerHasAce = true;
+					break;
+				}
+			}
+			if (playerTotal == 21 && playerHasAce) {
+				return bet;
+			} else if (playerTotal > 21) {
+				return -bet;
+			} else if (computerTotal > 21) {
+				return bet;
+			} else {
+				if (playerTotal > computerTotal) {
+					return bet;
+				} else if (computerTotal > playerTotal) {
+					return -bet;
+				} else {
+					return 0;
+				}
 			}
 		}
 
@@ -230,7 +421,6 @@
 				}
 				return;
 			}
-			// Use BlackJackComputer for dealer logic
 			computerPlayer.doDealerStep((BlackJackHand) playerTwoHand, (BlackJackHand) playerOneHand, this);
 		}
 
